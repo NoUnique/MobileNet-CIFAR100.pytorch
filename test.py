@@ -63,6 +63,7 @@ def main(_):
     if args.flagfile is not None:
         flagfile = args.flagfile
         subdir = os.path.splitext(os.path.basename(flagfile))[0]
+        subdir = os.path.join(subdir, '-'.join(FLAGS.BLOCK_ARGS))
 
 
     """ Prepare Dataset """

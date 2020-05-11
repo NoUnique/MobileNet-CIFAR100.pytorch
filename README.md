@@ -6,6 +6,10 @@ and [Docker-based DL development environment](https://github.com/NoUnique/devenv
 * Block argument parser is based on [EfficientNet](https://github.com/tensorflow/tpu/blob/master/models/official/efficientnet/efficientnet_builder.py)
 
 ## How to Use
+You have to clone this repository recursively
+```
+git clone --recursive https://github.com/NoUnique/MobileNet-CIFAR100.pytorch.git
+```
 To build Docker image
 ```
 ./docker/compose -b
@@ -45,6 +49,11 @@ To test trained model(specific checkpoint) on CIFAR-100 dataset with a single-GP
 ```
 CUDA_VISIBLE_DEVICES=0 python test.py --flagfile configs/train-mobilenetv2-cifar100-b128-e200-w5-cosine-wd0.0001-lr0.1.conf --PRETRAINED_CHECKPOINT_PATH=checkpoints/train-mobilenetv2-cifar100-b128-e200-w5-cosine-wd0.0001-lr0.1/checkpoint-200.pth.tar
 ```
+If you test other block_args setting, you have to specify 'BLOCK_ARGS' flag
+- default: MobileNetV2 with stride 1(stem), 1, 1, 2, 2, 1, 2, 1, other args are same to paper
+```
+CUDA_VISIBLE_DEVICES=0 python test.py --flagfile configs/train-mobilenetv2-cifar100-b128-e200-w5-cosine-wd0.0001-lr0.1.conf --BLOCK_ARGS=wm1.0_rn8_s1,t1_c16_n1_s1,t6_c24_n2_s1,t6_c32_n3_s2,t6_c64_n4_s2,t6_c96_n3_s1,t6_c160_n3_s2,t6_c320_n1_s1
+```
 
 ### Tracking training progress with TensorBoard
 To run tensorboard service to 6006 port
@@ -53,15 +62,18 @@ To run tensorboard service to 6006 port
 ```
 
 ### Experimental Results
-|network|top1-acc (during training)|MACs(M)|params(M)|ngpus|config|block_args|
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|MobileNetV2 (baseline)|- (58.63)|6.51|2.35|4|train-mobilenetv2-cifar100-b32-e200-w5-cosine-wd0.0001-lr0.025.conf|['wm1.0_rn8_s2', 't1_c16_n1_s1', 't6_c24_n2_s2', 't6_c32_n3_s2', 't6_c64_n4_s2', 't6_c96_n3_s1', 't6_c160_n3_s2', 't6_c320_n1_s1']|
-|MobileNetV2 (best)|74.34 (75.79)|0.09|2.35|4|train-mobilenetv2-cifar100-b128-e200-w5-cosine-wd0.0001-lr0.1.conf|['wm1.0_rn8_s1', 't1_c16_n1_s1', 't6_c24_n2_s1', 't6_c32_n3_s2', 't6_c64_n4_s2', 't6_c96_n3_s1', 't6_c160_n3_s2', 't6_c320_n1_s1']|
+- validation accuracy is calculated during training via horovod(it may not correct)
+
+|network|top1-acc|val-acc|MACs(M)|params(M)|ngpus|config|block_args|
+|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+|MobileNetV2 |74.34|(75.8)|91.37|2.35|4|train-mobilenetv2-cifar100-b128-e200-w5-cosine-wd0.0001-lr0.1.conf|['wm1.0_rn8_s1', 't1_c16_n1_s1', 't6_c24_n2_s1', 't6_c32_n3_s2', 't6_c64_n4_s2', 't6_c96_n3_s1', 't6_c160_n3_s2', 't6_c320_n1_s1']|
+|MobileNetV2 |68.15|(70.2)|25.67|2.35|4|train-mobilenetv2-cifar100-b128-e200-w5-cosine-wd0.0001-lr0.1.conf|['wm1.0_rn8_s1', 't1_c16_n1_s1', 't6_c24_n2_s2', 't6_c32_n3_s2', 't6_c64_n4_s2', 't6_c96_n3_s1', 't6_c160_n3_s2', 't6_c320_n1_s1']|
+|MobileNetV2 (baseline)|56.61|(59.6)|6.51|2.35|4|train-mobilenetv2-cifar100-b128-e200-w5-cosine-wd0.0001-lr0.1.conf|['wm1.0_rn8_s2', 't1_c16_n1_s1', 't6_c24_n2_s2', 't6_c32_n3_s2', 't6_c64_n4_s2', 't6_c96_n3_s1', 't6_c160_n3_s2', 't6_c320_n1_s1']|
 
 ### Pretrained Models 
 |network|top1-acc|MACs(M)|params(M)|checkpoint|ngpus|config|block_args|
 |:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-|MobileNetV2 (best)|74.34|0.09|2.35|[TBA]()|4|train-mobilenetv2-cifar100-b128-e200-w5-cosine-wd0.0001-lr0.1.conf|['wm1.0_rn8_s1', 't1_c16_n1_s1', 't6_c24_n2_s1', 't6_c32_n3_s2', 't6_c64_n4_s2', 't6_c96_n3_s1', 't6_c160_n3_s2', 't6_c320_n1_s1']|
+|MobileNetV2 (best)|74.34|91.37|2.35|[TBA]()|4|train-mobilenetv2-cifar100-b128-e200-w5-cosine-wd0.0001-lr0.1.conf|['wm1.0_rn8_s1', 't1_c16_n1_s1', 't6_c24_n2_s1', 't6_c32_n3_s2', 't6_c64_n4_s2', 't6_c96_n3_s1', 't6_c160_n3_s2', 't6_c320_n1_s1']|
   
 
 ## Contact

@@ -69,6 +69,7 @@ def main(_):
     if args.flagfile is not None:
         flagfile = args.flagfile
         subdir = os.path.splitext(os.path.basename(flagfile))[0]
+        subdir = os.path.join(subdir, '-'.join(FLAGS.BLOCK_ARGS))
         script_name = [os.path.splitext(os.path.basename(arg))[0]
                        for arg in sys.argv if arg.endswith('.py')]
         if len(script_name) > 0:
@@ -266,8 +267,6 @@ def main(_):
     """ Training Loop """
     if hvd.rank() == 0:
         print(model)
-        calculate_model_complexity(model, input_dim=FLAGS.DATA_SHAPE, cuda=FLAGS.CUDA)
-        compute_inference_time(model, input_dim=FLAGS.DATA_SHAPE, cuda=FLAGS.CUDA)
         print(flags_to_string(FLAGS))
     for epoch in range(resume_from_epoch, FLAGS.EPOCHS):
         train(epoch)
